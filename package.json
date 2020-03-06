@@ -4,5 +4,11 @@
   "main": "index.js",
   "repository": "https://github.com/Volpe6/video-maker.git",
   "author": "Volpe6 <baasch2014@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  },
+  "scripts": {
+    "ini": "node index.js"
+  }
 }
