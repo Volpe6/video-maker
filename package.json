@@ -6,9 +6,11 @@
   "author": "Volpe6 <baasch2014@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "readline-sync": "^1.4.10"
+    "algorithmia": "^0.3.10",
+    "readline-sync": "^1.4.10",
+    "sbd": "^1.0.16"
   },
   "scripts": {
-    "ini": "node index.js"
+    "robos": "node index.js"
   }
 }
