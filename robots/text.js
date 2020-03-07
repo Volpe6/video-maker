@@ -1,11 +1,48 @@
-const algorithmia       = require('algorithmia');
-const algorithmiaApiKey = require('../credencials/algorithmia.json').apiKey;
+const algorithmia                = require('algorithmia');
+const algorithmiaApiKey          = require('../credencials/algorithmia.json').apiKey;
 const sentenceBpundaryDetecition = require('sbd');
+
+const { apikey: watsonApiKey, url: watsonURL } = require('../credencials/watson-nlu.json');
+
+const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1.js');
+const { IamAuthenticator  } = require('ibm-watson/auth');
+
+const nlu = new NaturalLanguageUnderstandingV1({
+    version: '2019-07-12',
+    authenticator: new IamAuthenticator({
+        apikey: watsonApiKey
+    }),
+    url: watsonURL
+});
+
+async function fetchWatsonAndReturnKeywords(sentence) {
+    return new Promise((resolve, reject) => {
+        nlu.analyze({
+            text: `Hi I'am Michael Jackson and I like doing the moonwalk dance move.`,
+            features: {
+                keywords: {}
+            }
+        }, (error, response) => {
+            if(error) {
+                throw error;
+            }
+
+            const keywords = response.keywords.map((keyword) => {
+                return keyword.text;
+            });
+
+            resolve(keywords);
+        });
+        
+    });
+}
 
 async function robot(content) {
     await fetchContentFromWikipedia(content);
     sanitizeContent(content);
     breakContentIntoSentences(content);
+    limitmaximumSentences(content);
+    await fetchKeywordsOfAllSentences(content);
 
     async function fetchContentFromWikipedia(content) {
         const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey);
@@ -46,13 +83,44 @@ async function robot(content) {
         content.sentences = [];
 
         const sentences = sentenceBpundaryDetecition.sentences(content.sourceContentSanitized);
-
         sentences.forEach((sentence) => {
-            content.sentence.push({
+            content.sentences.push({
                 text: sentence,
                 keywords: [],
                 images: []
             })
+        });
+    }
+
+    function limitmaximumSentences(content) {
+        content.sentences = content.sentences.slice(0, content.maximumSentences);
+    }
+
+    async function fetchKeywordsOfAllSentences(content) {
+       for(const sentence of content.sentences) {
+         sentence.keyword = await fetchWatsonAndReturnKeywords(sentence.text);
+       }
+    }
+
+    async function fetchWatsonAndReturnKeywords(sentence) {
+        return new Promise((resolve, reject) => {
+            nlu.analyze({
+                text: sentence,
+                features: {
+                    keywords: {}
+                }
+            }, (error, response) => {
+                if(error) {
+                    throw error;
+                }
+                
+                const keywords = response.result.keywords.map((keyword) => {
+                    return keyword.text;
+                });
+    
+                resolve(keywords);
+            });
+            
         });
     }
 }
