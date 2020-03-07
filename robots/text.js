@@ -1,7 +1,7 @@
 const algorithmia                = require('algorithmia');
 const algorithmiaApiKey          = require('../credencials/algorithmia.json').apiKey;
 const sentenceBpundaryDetecition = require('sbd');
-
+const state                      = require('./state');
 const { apikey: watsonApiKey, url: watsonURL } = require('../credencials/watson-nlu.json');
 
 const NaturalLanguageUnderstandingV1 = require('ibm-watson/natural-language-understanding/v1.js');
@@ -15,29 +15,9 @@ const nlu = new NaturalLanguageUnderstandingV1({
     url: watsonURL
 });
 
-async function fetchWatsonAndReturnKeywords(sentence) {
-    return new Promise((resolve, reject) => {
-        nlu.analyze({
-            text: `Hi I'am Michael Jackson and I like doing the moonwalk dance move.`,
-            features: {
-                keywords: {}
-            }
-        }, (error, response) => {
-            if(error) {
-                throw error;
-            }
-
-            const keywords = response.keywords.map((keyword) => {
-                return keyword.text;
-            });
-
-            resolve(keywords);
-        });
-        
-    });
-}
-
-async function robot(content) {
+async function robot() {
+    const content = state.load();
+    
     await fetchContentFromWikipedia(content);
     sanitizeContent(content);
     breakContentIntoSentences(content);
