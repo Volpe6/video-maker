@@ -17,12 +17,14 @@ const nlu = new NaturalLanguageUnderstandingV1({
 
 async function robot() {
     const content = state.load();
-    
+
     await fetchContentFromWikipedia(content);
     sanitizeContent(content);
     breakContentIntoSentences(content);
     limitmaximumSentences(content);
     await fetchKeywordsOfAllSentences(content);
+
+    state.save(content);
 
     async function fetchContentFromWikipedia(content) {
         const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey);
@@ -78,7 +80,7 @@ async function robot() {
 
     async function fetchKeywordsOfAllSentences(content) {
        for(const sentence of content.sentences) {
-         sentence.keyword = await fetchWatsonAndReturnKeywords(sentence.text);
+         sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text);
        }
     }
 
