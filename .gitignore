@@ -106,6 +106,8 @@ dist
 credencials/*.json
 credencials/*.jpg
 credencials/*.png
+credencials/*.js
+credencials/*.mov
 
 content/
 
