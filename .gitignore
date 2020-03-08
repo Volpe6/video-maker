@@ -104,6 +104,8 @@ dist
 .tern-port
 
 credencials/*.json
+credencials/*.jpg
+credencials/*.png
 
 content/
 
