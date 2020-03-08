@@ -105,4 +105,6 @@ dist
 
 credencials/*.json
 
+content/
+
 content.json
