@@ -6,6 +6,7 @@ const state           = require('./state');
 const googleSearchCredencials = require('../credencials/google-search.json');
 
 async function robot() {
+  console.log('> [image-robot] Starting...');
   const content     = state.load();
   
   await fetchImageOfAllSentencens(content);
@@ -14,11 +15,17 @@ async function robot() {
   state.save(content);
 
   async function fetchImageOfAllSentencens(content) {
-    for(const sentence of content.sentences) {
-      const query = `${content.searchTerm} ${sentence.keywords[0]}`;
-      sentence.images = await fethGoogleAndReturnImagesLinks(query);
+    for(let i = 0; i < content.sentences.length; i++) {
+      let query;
+      if(i == 0) {
+        query = `${content.searchTerm}`;
+      } else {
+        query = `${content.searchTerm} ${content.sentences[i].keywords[0]}`;
+      }
+      console.log('> > [image-robot] Querying Google images with: ' + '"' + query + '"');
+      content.sentences[i].images = await fethGoogleAndReturnImagesLinks(query);
 
-      sentence.googleSearchQuery = query;
+      content.sentences[i].googleSearchQuery = query;
     }
   }
 
@@ -50,14 +57,14 @@ async function robot() {
 
             try {
                 if(content.downloadedImages.includes(imageUrl)) {
-                    throw new Error('Imagem já foi baixada');
+                    throw new Error('> > [image-robot] Imagem já foi baixada');
                 }
                 await downloadAndSaveImage(imageUrl, `${i}-original.png`);
                 content.downloadedImages.push(imageUrl);
-                console.log(`> [${i}] [${j}] Baixou imagem com sucesso: ${imageUrl}`);
+                console.log(`> [image-robot] [${i}] [${j}] Baixou imagem com sucesso: ${imageUrl}`);
                 break;
             } catch(error) {
-              console.log(`> [${i}] [${j}] Erro ao baixar (${imageUrl}): ${error}`);
+              console.log(`> [image-robot] [${i}] [${j}] Erro ao baixar (${imageUrl}): ${error}`);
             }
         }
     }

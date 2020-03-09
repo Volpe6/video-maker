@@ -9,7 +9,7 @@ const fromRoot = relPath => path.resolve(rootPath, relPath);
 
 
 async function robot() {
-
+    console.log('> [video-robot] Starting...');
     await convertAllImages(content);
     await createAllSentenceImages(content);
     // await createYouTubeThumbnail();
@@ -117,7 +117,7 @@ async function robot() {
                 if(error) {
                 return reject(error);
                 }
-                console.log(`> sentence created: ${outputFile}`);
+                console.log(`> [video-robot] sentence created: ${outputFile}`);
                 resolve();
             });
         });
@@ -149,7 +149,7 @@ async function robot() {
             const templateFilePath    = `${rootPath}/templates/1/template.aep`;
             const destinationFilePath = `${rootPath}/content/output.mov`; 
 
-            console.log('> Starting After Effects');
+            console.log('> [video-robot] Starting After Effects');
 
             const aerender = spawn(aerenderFilePath, [
                 '-comp', 'main',
@@ -162,7 +162,7 @@ async function robot() {
             });
 
             aerender.on('close', () => {
-                console.log('> After Effects closed');
+                console.log('> [video-robot] After Effects closed');
                 resolve();
             });
 

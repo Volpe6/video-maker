@@ -16,6 +16,7 @@ const nlu = new NaturalLanguageUnderstandingV1({
 });
 
 async function robot() {
+    console.log(`> [text-robot] Starting...`);
     const content = state.load();
 
     await fetchContentFromWikipedia(content);
@@ -27,12 +28,14 @@ async function robot() {
     state.save(content);
 
     async function fetchContentFromWikipedia(content) {
+        console.log(`> [text-robot] Fething content from wikipedia`);
         const algorithmiaAuthenticated = algorithmia(algorithmiaApiKey);
         const wikipediaAlgothm         = algorithmiaAuthenticated.algo("web/WikipediaParser/0.1.2?timeout=300"); 
         const wikipediaResponse        = await wikipediaAlgothm.pipe(`${content.prefix} ${content.searchTerm}`);
         const wikipediaContent         = wikipediaResponse.get();
 
         content.sourceContentOriginal = wikipediaContent.content;
+        console.log('> [text-robot] Fething done!');
     }
 
     function sanitizeContent(content) {
@@ -79,8 +82,11 @@ async function robot() {
     }
 
     async function fetchKeywordsOfAllSentences(content) {
+        console.log('> [text-robot] Starting to feth keywords from Watson');
        for(const sentence of content.sentences) {
-         sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text);
+        console.log('> [text-robot] Sentence: ' + sentence.text);
+        sentence.keywords = await fetchWatsonAndReturnKeywords(sentence.text);
+        console.log('> [text-robot] Keywords: ' + sentence.keywords.join(', ') + "\n");
        }
     }
 
