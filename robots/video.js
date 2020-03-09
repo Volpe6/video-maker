@@ -10,11 +10,11 @@ const fromRoot = relPath => path.resolve(rootPath, relPath);
 
 async function robot() {
 
-    // await convertAllImages(content);
-    // await createAllSentenceImages(content);
+    await convertAllImages(content);
+    await createAllSentenceImages(content);
     // await createYouTubeThumbnail();
     // await createAfterEffectScript(content);
-    await renderVideoWithAfterEffects();
+    // await renderVideoWithAfterEffects();
 
     state.save(content);
 
@@ -25,7 +25,7 @@ async function robot() {
     }
 
     async function convertImage(sentenceIndex) {
-            return new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const inputFile  = fromRoot(`./content/${sentenceIndex}-original.png[0]`);
             const outputFile = fromRoot(`./content/${sentenceIndex}-converted.png`);
             
@@ -61,8 +61,8 @@ async function robot() {
                 resolve();
             });
                 
-            });
-        }
+        });
+    }
 
         async function createAllSentenceImages(content) {
         
